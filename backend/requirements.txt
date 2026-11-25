@@ -7,3 +7,4 @@ PyJWT[crypto]
 gunicorn
 whitenoise
 python-dotenv
+supabase
