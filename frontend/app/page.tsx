@@ -56,10 +56,8 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* HERO SECTION WITH MOVING BACKGROUND IMAGE */}
+      {/* HERO SECTION */}
       <section className="relative isolate overflow-hidden bg-blue-950 px-6 py-24 text-center text-white sm:py-32">
-
-        {/* MOVING BACKGROUND IMAGE */}
         <div
           className="training-background absolute inset-0 -z-20 bg-cover bg-center"
           style={{
@@ -67,10 +65,8 @@ export default function HomePage() {
           }}
         />
 
-        {/* BLUE OVERLAY */}
         <div className="absolute inset-0 -z-10 bg-gradient-to-br from-blue-950/85 via-blue-900/75 to-blue-800/80" />
 
-        {/* ORIGINAL TEXT - NOT CHANGED */}
         <div className="relative mx-auto max-w-4xl">
           <p className="mb-4 font-semibold uppercase tracking-widest text-blue-200">
             Welcome to Our Training Platform
@@ -110,7 +106,6 @@ export default function HomePage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-
           {/* AVAILABLE COURSES */}
           <div className="rounded-xl bg-white p-6 text-center shadow-md transition hover:-translate-y-1">
             <div className="text-4xl">📚</div>
@@ -162,7 +157,6 @@ export default function HomePage() {
               Manage courses, registrations, and training activities.
             </p>
           </div>
-
         </div>
       </section>
 
@@ -184,6 +178,109 @@ export default function HomePage() {
         </button>
       </section>
 
+      {/* CONTACT US */}
+      <section className="bg-white px-6 py-16">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-10 text-center">
+            <h2 className="text-3xl font-bold text-blue-950">
+              CONTACT US
+            </h2>
+
+            <p className="mt-3 text-slate-600">
+              Get in touch with us through the following platforms.
+            </p>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {/* TELEPHONE */}
+            <a
+              href="tel:+250790192591"
+              className="rounded-xl border border-slate-200 bg-slate-50 p-6 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+            >
+              <div className="text-4xl">📞</div>
+
+              <h3 className="mt-4 font-bold text-blue-950">
+                Telephone
+              </h3>
+
+              <p className="mt-2 text-sm text-slate-600">
+                +250 790 192 591
+              </p>
+
+              <p className="mt-3 text-sm font-semibold text-blue-700">
+                Call Now
+              </p>
+            </a>
+
+            {/* WHATSAPP */}
+            <a
+              href="https://wa.me/250790192591"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-xl border border-slate-200 bg-slate-50 p-6 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+            >
+              <div className="text-4xl">💬</div>
+
+              <h3 className="mt-4 font-bold text-blue-950">
+                WhatsApp
+              </h3>
+
+              <p className="mt-2 text-sm text-slate-600">
+                +250 790 192 591
+              </p>
+
+              <p className="mt-3 text-sm font-semibold text-green-600">
+                Chat on WhatsApp
+              </p>
+            </a>
+
+            {/* LINKEDIN */}
+            <a
+              href="https://www.linkedin.com/in/niyikiza-emmanuel-352573338"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-xl border border-slate-200 bg-slate-50 p-6 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+            >
+              <div className="text-4xl">💼</div>
+
+              <h3 className="mt-4 font-bold text-blue-950">
+                LinkedIn
+              </h3>
+
+              <p className="mt-2 text-sm text-slate-600">
+                Niyikiza Emmanuel
+              </p>
+
+              <p className="mt-3 text-sm font-semibold text-blue-700">
+                Visit LinkedIn
+              </p>
+            </a>
+
+            {/* X */}
+            <a
+              href="https://x.com/EmmanuelNipf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-xl border border-slate-200 bg-slate-50 p-6 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+            >
+              <div className="text-4xl font-bold">𝕏</div>
+
+              <h3 className="mt-4 font-bold text-blue-950">
+                X (Twitter)
+              </h3>
+
+              <p className="mt-2 text-sm text-slate-600">
+                @EmmanuelNipf
+              </p>
+
+              <p className="mt-3 text-sm font-semibold text-blue-700">
+                Follow on X
+              </p>
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* FOOTER */}
       <footer className="bg-blue-950 px-4 py-7 text-center text-white">
         <div className="flex flex-row flex-nowrap items-center justify-center gap-6 overflow-x-auto text-sm font-bold">
@@ -198,6 +295,10 @@ export default function HomePage() {
 
         <p className="mt-4 text-xs text-blue-200">
           Training Course Registration System
+        </p>
+
+        <p className="mt-2 text-xs text-blue-300">
+          © 2026 Training Course Registration System. All rights reserved.
         </p>
       </footer>
     </main>
