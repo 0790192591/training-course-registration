@@ -47,7 +47,7 @@ type DashboardData = {
 };
 
 const PAGE_SIZE = 5;
-const API = "http://127.0.0.1:8000/api";
+const API = "https://training-course-registration.onrender.com/api";
 
 const SECTION_TITLES: Record<string, string> = {
   overview: "System Overview",
@@ -87,43 +87,35 @@ export default function HRDashboard() {
 
   const [activeSection, setActiveSection] = useState("overview");
 
-  // Course creation
   const [courseTitle, setCourseTitle] = useState("");
   const [courseSeats, setCourseSeats] = useState("10");
   const [creating, setCreating] = useState(false);
 
-  // Course editing
   const [editingCourseId, setEditingCourseId] = useState<number | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editSeats, setEditSeats] = useState("10");
   const [updatingCourse, setUpdatingCourse] = useState(false);
   const [deletingCourseId, setDeletingCourseId] = useState<number | null>(null);
 
-  // Course search
   const [courseSearchInput, setCourseSearchInput] = useState("");
   const [courseSearchTerm, setCourseSearchTerm] = useState("");
 
-  // Course sorting and pagination
   const [courseSortBy, setCourseSortBy] = useState("title");
   const [courseSortAscending, setCourseSortAscending] = useState(true);
   const [coursePage, setCoursePage] = useState(1);
 
-  // Registration sorting and pagination
   const [registrationSortBy, setRegistrationSortBy] = useState("id");
   const [registrationSortAscending, setRegistrationSortAscending] =
     useState(false);
   const [registrationPage, setRegistrationPage] = useState(1);
 
-  // Analytics sorting
   const [analyticsSortAscending, setAnalyticsSortAscending] = useState(true);
 
-  // PDF upload
   const [uploadTitle, setUploadTitle] = useState("");
   const [uploadCourseId, setUploadCourseId] = useState("");
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadingMaterial, setUploadingMaterial] = useState(false);
 
-  // PDF actions
   const [downloadingMaterialId, setDownloadingMaterialId] =
     useState<number | null>(null);
   const [deletingMaterialId, setDeletingMaterialId] = useState<number | null>(
@@ -159,10 +151,9 @@ export default function HRDashboard() {
     setAnalyticsLoading(false);
 
     try {
-      const materialsResponse = await fetch(
-        `${API}/course-materials/`,
-        { headers }
-      );
+      const materialsResponse = await fetch(`${API}/course-materials/`, {
+        headers,
+      });
 
       if (!materialsResponse.ok) {
         throw new Error("Unable to load course materials.");
@@ -180,7 +171,6 @@ export default function HRDashboard() {
     }
   }
 
-  // Load dashboard and check admin access
   useEffect(() => {
     async function loadDashboard() {
       try {
@@ -223,7 +213,6 @@ export default function HRDashboard() {
     loadDashboard();
   }, [router]);
 
-  // Search and sort courses
   const filteredCourses = dashboard
     ? dashboard.courses.filter((course) =>
         course.title
@@ -258,7 +247,6 @@ export default function HRDashboard() {
     coursePage * PAGE_SIZE
   );
 
-  // Sort registrations
   const sortedRegistrations = dashboard
     ? [...dashboard.registrations].sort((a, b) => {
         let result = 0;
@@ -290,7 +278,6 @@ export default function HRDashboard() {
     return analyticsSortAscending ? result : -result;
   });
 
-  // Create course
   async function handleCreateCourse(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setCreateMessage("");
@@ -342,7 +329,6 @@ export default function HRDashboard() {
     }
   }
 
-  // Update course
   async function handleUpdateCourse(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setEditMessage("");
@@ -369,17 +355,14 @@ export default function HRDashboard() {
         return;
       }
 
-      const response = await fetch(
-        `${API}/courses/${editingCourseId}/`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({ title, seats }),
-        }
-      );
+      const response = await fetch(`${API}/courses/${editingCourseId}/`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ title, seats }),
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -398,7 +381,6 @@ export default function HRDashboard() {
     }
   }
 
-  // Delete course
   async function handleDeleteCourse(course: Course) {
     const confirmed = window.confirm(
       `Are you sure you want to delete "${course.title}"?`
@@ -457,7 +439,6 @@ export default function HRDashboard() {
     }
   }
 
-  // Upload PDF
   async function handleUploadMaterial(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -543,7 +524,6 @@ export default function HRDashboard() {
     }
   }
 
-  // Open PDF
   async function handleDownloadMaterial(material: CourseMaterial) {
     setDownloadingMaterialId(material.id);
     setMaterialsMessage("");
@@ -591,7 +571,6 @@ export default function HRDashboard() {
     }
   }
 
-  // Delete PDF
   async function handleDeleteMaterial(material: CourseMaterial) {
     const confirmed = window.confirm(
       `Are you sure you want to delete "${material.title}"?`
@@ -647,7 +626,6 @@ export default function HRDashboard() {
     }
   }
 
-  // Logout
   async function handleLogout() {
     const { error } = await supabase.auth.signOut();
 
@@ -679,8 +657,6 @@ export default function HRDashboard() {
       </header>
 
       <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-8 lg:flex-row lg:px-6">
-
-        {/* LEFT SIDEBAR */}
         <aside className="w-full shrink-0 rounded-xl bg-white p-4 shadow lg:sticky lg:top-6 lg:h-fit lg:w-64">
           <h2 className="mb-4 px-2 text-lg font-bold text-blue-900">
             Admin Menu
@@ -715,7 +691,6 @@ export default function HRDashboard() {
           </button>
         </aside>
 
-        {/* RIGHT CONTENT */}
         <div className="min-w-0 flex-1">
           <h2 className="mb-6 text-2xl font-bold text-slate-800">
             {SECTION_TITLES[activeSection]}
@@ -735,11 +710,8 @@ export default function HRDashboard() {
 
           {dashboard && (
             <>
-              {/* SYSTEM OVERVIEW */}
               <section
-                className={`${
-                  activeSection === "overview" ? "" : "hidden"
-                }`}
+                className={activeSection === "overview" ? "" : "hidden"}
               >
                 <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                   <div className="rounded-xl bg-white p-6 shadow">
@@ -774,7 +746,6 @@ export default function HRDashboard() {
                 </div>
               </section>
 
-              {/* ADD NEW COURSE */}
               <section
                 className={`rounded-xl bg-white p-6 shadow ${
                   activeSection === "add-course" ? "" : "hidden"
@@ -828,7 +799,6 @@ export default function HRDashboard() {
                 )}
               </section>
 
-              {/* COURSES OVERVIEW */}
               <section
                 className={`rounded-xl bg-white p-6 shadow ${
                   activeSection === "courses" ? "" : "hidden"
@@ -899,9 +869,7 @@ export default function HRDashboard() {
                     }}
                     className="rounded-lg bg-blue-900 px-4 py-2 font-semibold text-white hover:bg-blue-800"
                   >
-                    {courseSortAscending
-                      ? "Ascending ↑"
-                      : "Descending ↓"}
+                    {courseSortAscending ? "Ascending ↑" : "Descending ↓"}
                   </button>
                 </div>
 
@@ -1007,15 +975,11 @@ export default function HRDashboard() {
                   </>
                 )}
 
-                {/* EDIT COURSE */}
                 {editingCourseId !== null && (
                   <section className="mt-8 rounded-xl border border-slate-200 bg-slate-50 p-6">
                     <h2 className="mb-5 text-xl font-bold">Edit Course</h2>
 
-                    <form
-                      onSubmit={handleUpdateCourse}
-                      className="space-y-4"
-                    >
+                    <form onSubmit={handleUpdateCourse} className="space-y-4">
                       <div>
                         <label className="mb-2 block font-medium">
                           Course Title
@@ -1054,9 +1018,7 @@ export default function HRDashboard() {
                           disabled={updatingCourse}
                           className="rounded-lg bg-green-700 px-5 py-3 font-semibold text-white hover:bg-green-800 disabled:opacity-50"
                         >
-                          {updatingCourse
-                            ? "Updating..."
-                            : "Save Changes"}
+                          {updatingCourse ? "Updating..." : "Save Changes"}
                         </button>
 
                         <button
@@ -1081,7 +1043,6 @@ export default function HRDashboard() {
                 )}
               </section>
 
-              {/* COURSE MATERIALS PDF */}
               <section
                 className={`rounded-xl bg-white p-6 shadow ${
                   activeSection === "materials" ? "" : "hidden"
@@ -1110,9 +1071,7 @@ export default function HRDashboard() {
                     <input
                       type="text"
                       value={uploadTitle}
-                      onChange={(event) =>
-                        setUploadTitle(event.target.value)
-                      }
+                      onChange={(event) => setUploadTitle(event.target.value)}
                       placeholder="Enter PDF title"
                       required
                       className="w-full rounded-lg border border-slate-300 bg-white p-3"
@@ -1213,9 +1172,7 @@ export default function HRDashboard() {
 
                             <button
                               type="button"
-                              onClick={() =>
-                                handleDeleteMaterial(material)
-                              }
+                              onClick={() => handleDeleteMaterial(material)}
                               disabled={
                                 deletingMaterialId !== null ||
                                 downloadingMaterialId !== null
@@ -1240,7 +1197,6 @@ export default function HRDashboard() {
                 )}
               </section>
 
-              {/* COURSE ANALYTICS */}
               <section
                 className={`rounded-xl bg-white p-6 shadow ${
                   activeSection === "analytics" ? "" : "hidden"
@@ -1298,7 +1254,6 @@ export default function HRDashboard() {
                 )}
               </section>
 
-              {/* ALL REGISTRATIONS */}
               <section
                 className={`rounded-xl bg-white p-6 shadow ${
                   activeSection === "registrations" ? "" : "hidden"
@@ -1354,10 +1309,7 @@ export default function HRDashboard() {
                         <tbody>
                           {paginatedRegistrations.map(
                             (registration, index) => (
-                              <tr
-                                key={registration.id}
-                                className="border-b"
-                              >
+                              <tr key={registration.id} className="border-b">
                                 <td className="p-3">
                                   {(registrationPage - 1) * PAGE_SIZE +
                                     index +
@@ -1366,9 +1318,7 @@ export default function HRDashboard() {
                                 <td className="p-3 font-medium">
                                   {registration.employee_id}
                                 </td>
-                                <td className="p-3">
-                                  {registration.course}
-                                </td>
+                                <td className="p-3">{registration.course}</td>
                               </tr>
                             )
                           )}
@@ -1420,16 +1370,10 @@ export default function HRDashboard() {
         </div>
       </div>
 
-      {/* FOOTER - BOTH DETAILS ON ONE LINE */}
       <footer className="mt-8 border-t border-slate-300 bg-white px-4 py-6">
         <div className="flex flex-row flex-nowrap items-center justify-center gap-6 overflow-x-auto text-center text-sm font-bold tracking-wide text-blue-900">
-          <p className="whitespace-nowrap">
-            REG NUMBER: 223009090
-          </p>
-
-          <p className="whitespace-nowrap">
-            NAME: NIYIKIZA EMMANUEL
-          </p>
+          <p className="whitespace-nowrap">REG NUMBER: 223009090</p>
+          <p className="whitespace-nowrap">NAME: NIYIKIZA EMMANUEL</p>
         </div>
       </footer>
     </main>

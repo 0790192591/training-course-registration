@@ -25,7 +25,7 @@ type CourseMaterial = {
   created_at: string;
 };
 
-const API = "http://127.0.0.1:8000/api";
+const API = "https://training-course-registration.onrender.com/api";
 
 const MENU_ITEMS = [
   { id: "overview", label: "System Overview" },
