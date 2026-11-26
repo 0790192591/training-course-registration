@@ -5,17 +5,30 @@ Django settings for config project.
 
 from pathlib import Path
 import os
+
 from dotenv import load_dotenv
 import dj_database_url
+from django.core.exceptions import ImproperlyConfigured
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load environment variables from backend/.env
 load_dotenv(BASE_DIR / ".env")
 
-# Security
-SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-local-development-key")
 
-DEBUG = os.getenv("DEBUG", "True").lower() == "true"
+# --------------------------------------------------
+# SECURITY
+# --------------------------------------------------
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+
+if not SECRET_KEY:
+    raise ImproperlyConfigured(
+        "SECRET_KEY is required. Please configure it in environment variables."
+    )
+
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = [
     host.strip()
@@ -26,7 +39,11 @@ ALLOWED_HOSTS = [
     if host.strip()
 ]
 
-# Applications
+
+# --------------------------------------------------
+# APPLICATIONS
+# --------------------------------------------------
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -34,24 +51,38 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
     "corsheaders",
     "rest_framework",
+
     "courses",
 ]
 
-# Middleware
+
+# --------------------------------------------------
+# MIDDLEWARE
+# --------------------------------------------------
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
+
     "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
+
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+
 ROOT_URLCONF = "config.urls"
+
+
+# --------------------------------------------------
+# TEMPLATES
+# --------------------------------------------------
 
 TEMPLATES = [
     {
@@ -68,18 +99,39 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = "config.wsgi.application"
 
-# Database: Supabase PostgreSQL
+
+# --------------------------------------------------
+# DATABASE: SUPABASE POSTGRESQL ONLY
+# --------------------------------------------------
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise ImproperlyConfigured(
+        "DATABASE_URL is required. PostgreSQL must be configured."
+    )
+
+if not DATABASE_URL.startswith(("postgres://", "postgresql://")):
+    raise ImproperlyConfigured(
+        "DATABASE_URL must be a PostgreSQL connection URL."
+    )
+
 DATABASES = {
-    "default": dj_database_url.config(
-        default="sqlite:///" + str(BASE_DIR / "db.sqlite3"),
+    "default": dj_database_url.parse(
+        DATABASE_URL,
         conn_max_age=0,
         ssl_require=True,
     )
 }
 
-# Password validation
+
+# --------------------------------------------------
+# PASSWORD VALIDATION
+# --------------------------------------------------
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -95,23 +147,38 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
+
+# --------------------------------------------------
+# INTERNATIONALIZATION
+# --------------------------------------------------
+
 LANGUAGE_CODE = "en-us"
+
 TIME_ZONE = "UTC"
+
 USE_I18N = True
+
 USE_TZ = True
 
-# Static files
-STATIC_URL = "static/"
 
-# Email
-MAILERS = {
-    "default": {
-        "BACKEND": "django.core.mail.backends.console.EmailBackend",
-    },
-}
+# --------------------------------------------------
+# STATIC FILES
+# --------------------------------------------------
 
-# CORS: allow local frontend and deployed Vercel frontend
+STATIC_URL = "/static/"
+
+
+# --------------------------------------------------
+# EMAIL
+# --------------------------------------------------
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+
+# --------------------------------------------------
+# CORS
+# --------------------------------------------------
+
 CORS_ALLOWED_ORIGINS = [
     origin.strip()
     for origin in os.getenv(
@@ -121,19 +188,34 @@ CORS_ALLOWED_ORIGINS = [
     if origin.strip()
 ]
 
-# CSRF trusted frontend origins
+
+# --------------------------------------------------
+# CSRF
+# --------------------------------------------------
+
 CSRF_TRUSTED_ORIGINS = [
     origin.strip()
-    for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
+    for origin in os.getenv(
+        "CSRF_TRUSTED_ORIGINS",
+        ""
+    ).split(",")
     if origin.strip()
 ]
 
-# REST Framework and Supabase Authentication
+
+# --------------------------------------------------
+# REST FRAMEWORK AND SUPABASE AUTHENTICATION
+# --------------------------------------------------
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "authentication.supabase_auth.SupabaseAuthentication",
     ],
 }
 
-# Default primary key
+
+# --------------------------------------------------
+# DEFAULT PRIMARY KEY
+# --------------------------------------------------
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
