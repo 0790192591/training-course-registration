@@ -3,13 +3,10 @@
 
 import { useState, type FormEvent } from "react";
 import { supabase } from "../../lib/supabase";
-import { useRouter } from "next/navigation";
 
 type RequestedRole = "employee" | "human_resource";
 
 export default function RegisterPage() {
-  const router = useRouter();
-
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -43,17 +40,11 @@ export default function RegisterPage() {
       }
 
       if (data.user) {
-        if (requestedRole === "human_resource") {
-          setMessage(
-            "Your account has been created. Your Human Resource access request requires administrator approval before you can access HR features."
-          );
-        } else {
-          setMessage(
-            data.session
-              ? "Employee account created successfully! You can now sign in."
-              : "Account created successfully. Please sign in."
-          );
-        }
+        setMessage(
+          data.session
+            ? "Account created successfully! You can now sign in."
+            : "Account created successfully. Please check your email if confirmation is required, then sign in."
+        );
 
         setFullName("");
         setEmail("");
@@ -80,7 +71,6 @@ export default function RegisterPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-100 px-6 py-10">
       <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">
-
         <h1 className="mb-2 text-center text-2xl font-bold text-blue-900">
           Create Account
         </h1>
@@ -90,12 +80,10 @@ export default function RegisterPage() {
         </p>
 
         <form onSubmit={handleRegister} className="space-y-4">
-
           <div>
             <label className="mb-2 block font-medium">
               Full Name
             </label>
-
             <input
               type="text"
               required
@@ -110,7 +98,6 @@ export default function RegisterPage() {
             <label className="mb-2 block font-medium">
               Email Address
             </label>
-
             <input
               type="email"
               required
@@ -128,7 +115,6 @@ export default function RegisterPage() {
             </label>
 
             <div className="grid grid-cols-2 gap-3">
-
               <button
                 type="button"
                 disabled={loading}
@@ -156,21 +142,13 @@ export default function RegisterPage() {
                 <span className="mb-2 block text-2xl">🏢</span>
                 <span className="block font-bold">Human Resource</span>
               </button>
-
             </div>
-
-            {requestedRole === "human_resource" && (
-              <p className="mt-2 text-xs text-purple-700">
-                Human Resource access requires administrator approval.
-              </p>
-            )}
           </div>
 
           <div>
             <label className="mb-2 block font-medium">
               Password
             </label>
-
             <input
               type="password"
               required
@@ -190,7 +168,6 @@ export default function RegisterPage() {
           >
             {loading ? "Creating account..." : "Create Account"}
           </button>
-
         </form>
 
         {message && (
@@ -205,7 +182,6 @@ export default function RegisterPage() {
             Login
           </a>
         </p>
-
       </div>
     </main>
   );
