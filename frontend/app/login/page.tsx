@@ -24,7 +24,7 @@ export default function LoginPage() {
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: email.trim(),
         password,
       });
 
@@ -40,12 +40,16 @@ export default function LoginPage() {
         return;
       }
 
-      const response = await fetch("http://127.0.0.1:8000/api/me/", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        "https://training-course-registration.onrender.com/api/me/",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
         await supabase.auth.signOut();
@@ -68,8 +72,11 @@ export default function LoginPage() {
       }
 
       router.refresh();
-    } catch {
-      setMessage("Unable to connect. Please check the servers and try again.");
+    } catch (error) {
+      console.error("Login error:", error);
+      setMessage(
+        "Unable to connect. Please check the servers and try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -104,7 +111,8 @@ export default function LoginPage() {
       setResetMessage(
         "If an account exists with this email, a password reset link has been sent. Please check your inbox."
       );
-    } catch {
+    } catch (error) {
+      console.error("Password reset error:", error);
       setResetMessage(
         "Unable to send the reset email. Please try again."
       );
