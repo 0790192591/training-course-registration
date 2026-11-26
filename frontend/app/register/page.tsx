@@ -1,9 +1,11 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { supabase } from "../../lib/supabase";
 import { useRouter } from "next/navigation";
+
+type RequestedRole = "employee" | "human_resource";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -11,10 +13,13 @@ export default function RegisterPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [requestedRole, setRequestedRole] =
+    useState<RequestedRole>("employee");
+
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleRegister(e: React.FormEvent<HTMLFormElement>) {
+  async function handleRegister(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     setMessage("");
@@ -27,6 +32,7 @@ export default function RegisterPage() {
         options: {
           data: {
             full_name: fullName.trim(),
+            requested_role: requestedRole,
           },
         },
       });
@@ -36,18 +42,35 @@ export default function RegisterPage() {
         return;
       }
 
-      if (data.session) {
-        router.push("/");
-        router.refresh();
-      } else {
-        setMessage(
-          "Account created successfully! Please check your email to confirm your account."
-        );
+      if (data.user) {
+        if (requestedRole === "human_resource") {
+          setMessage(
+            "Your account has been created. Your Human Resource access request requires administrator approval before you can access HR features."
+          );
+        } else {
+          setMessage(
+            data.session
+              ? "Employee account created successfully! You can now sign in."
+              : "Account created successfully. Please sign in."
+          );
+        }
+
+        setFullName("");
+        setEmail("");
+        setPassword("");
+
+        if (data.session) {
+          await supabase.auth.signOut();
+        }
+
+        return;
       }
+
+      setMessage("Account creation could not be completed. Please try again.");
     } catch (error) {
       console.error("Registration error:", error);
       setMessage(
-        "Connection error. Please check your internet connection and Supabase settings."
+        "Connection error. Please check your internet connection and try again."
       );
     } finally {
       setLoading(false);
@@ -55,8 +78,9 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-100 px-6">
-      <div className="w-full max-w-md rounded-xl bg-white p-8 shadow">
+    <main className="flex min-h-screen items-center justify-center bg-slate-100 px-6 py-10">
+      <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">
+
         <h1 className="mb-2 text-center text-2xl font-bold text-blue-900">
           Create Account
         </h1>
@@ -66,8 +90,12 @@ export default function RegisterPage() {
         </p>
 
         <form onSubmit={handleRegister} className="space-y-4">
+
           <div>
-            <label className="mb-2 block font-medium">Full Name</label>
+            <label className="mb-2 block font-medium">
+              Full Name
+            </label>
+
             <input
               type="text"
               required
@@ -79,19 +107,70 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="mb-2 block font-medium">Email Address</label>
+            <label className="mb-2 block font-medium">
+              Email Address
+            </label>
+
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
+              autoComplete="email"
               className="w-full rounded-lg border border-slate-300 p-3"
             />
           </div>
 
           <div>
-            <label className="mb-2 block font-medium">Password</label>
+            <label className="mb-2 block font-medium">
+              Select Account Type
+            </label>
+
+            <div className="grid grid-cols-2 gap-3">
+
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => setRequestedRole("employee")}
+                className={`rounded-lg border-2 p-4 text-center ${
+                  requestedRole === "employee"
+                    ? "border-blue-700 bg-blue-50 text-blue-900"
+                    : "border-slate-200 text-slate-600"
+                }`}
+              >
+                <span className="mb-2 block text-2xl">👨‍💼</span>
+                <span className="block font-bold">Employee</span>
+              </button>
+
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => setRequestedRole("human_resource")}
+                className={`rounded-lg border-2 p-4 text-center ${
+                  requestedRole === "human_resource"
+                    ? "border-purple-700 bg-purple-50 text-purple-900"
+                    : "border-slate-200 text-slate-600"
+                }`}
+              >
+                <span className="mb-2 block text-2xl">🏢</span>
+                <span className="block font-bold">Human Resource</span>
+              </button>
+
+            </div>
+
+            {requestedRole === "human_resource" && (
+              <p className="mt-2 text-xs text-purple-700">
+                Human Resource access requires administrator approval.
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="mb-2 block font-medium">
+              Password
+            </label>
+
             <input
               type="password"
               required
@@ -99,6 +178,7 @@ export default function RegisterPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="At least 8 characters"
+              autoComplete="new-password"
               className="w-full rounded-lg border border-slate-300 p-3"
             />
           </div>
@@ -108,8 +188,9 @@ export default function RegisterPage() {
             disabled={loading}
             className="w-full rounded-lg bg-blue-900 p-3 font-semibold text-white hover:bg-blue-800 disabled:opacity-50"
           >
-            {loading ? "Creating account..." : "Register"}
+            {loading ? "Creating account..." : "Create Account"}
           </button>
+
         </form>
 
         {message && (
@@ -124,6 +205,7 @@ export default function RegisterPage() {
             Login
           </a>
         </p>
+
       </div>
     </main>
   );
